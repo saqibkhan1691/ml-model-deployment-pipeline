@@ -1,4 +1,3 @@
-
 name: ML API CI
 
 on:
@@ -11,6 +10,9 @@ jobs:
   test-and-build:
     name: Test API and Build Docker Image
     runs-on: ubuntu-latest
+
+    env:
+      PYTHONPATH: ${{ github.workspace }}
 
     steps:
       - name: Checkout repository
@@ -25,15 +27,21 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          python -m pip install -r requirements.txt
 
       - name: Verify model artifacts
         run: |
           test -f model.joblib
           test -f feature_names.json
+          test -f app/main.py
+          test -f tests/test_api.py
+
+      - name: Check Python import
+        run: |
+          python -c "from app.main import app; print('App import successful')"
 
       - name: Run automated API tests
-        run: pytest -v
+        run: python -m pytest -v
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
