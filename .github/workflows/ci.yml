@@ -1,3 +1,4 @@
+
 name: ML API CI
 
 on:
@@ -8,9 +9,11 @@ on:
 
 jobs:
   test-and-build:
+    name: Test API and Build Docker Image
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -24,13 +27,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Verify trained model artifacts exist
+      - name: Verify model artifacts
         run: |
           test -f model.joblib
           test -f feature_names.json
 
-      - name: Run API tests
-        run: pytest -q
+      - name: Run automated API tests
+        run: pytest -v
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
